@@ -276,7 +276,8 @@ SharedData <- R6Class(
     #' @param withKey If `TRUE`, add a \code{key_} column with the key values of
     #'   each row (normally not needed since the key is either one of the other
     #'   columns or else just the row names).
-    data = function(withSelection = FALSE, withFilter = TRUE, withKey = FALSE) {
+    #' @param noKey If `TRUE`, return the data without the key column (for graphing purposes.)
+    data = function(withSelection = FALSE, withFilter = TRUE, withKey = FALSE, noKey = FALSE) {
       df <- if (is.reactive(private$.data)) {
         private$.data()
       } else {
@@ -298,6 +299,9 @@ SharedData <- R6Class(
       if (withKey) {
         df$key_ <- self$key()
       }
+
+      if (noKey)
+        df <- df[!sapply(df, \(x) {all(x %in% self$key())})]
 
       if (withFilter) {
         if (!is.null(private$.filterCV$get())) {

@@ -111,7 +111,12 @@ will invalidate if the selection or filter change (assuming that
 information was requested), or if the original data is a reactive
 expression that has invalidated.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$data(withSelection = FALSE, withFilter = TRUE, withKey = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$data(
+  withSelection = FALSE,
+  withFilter = TRUE,
+  withKey = FALSE,
+  noKey = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -127,6 +132,8 @@ of the current filter settings, if any.}
 \item{\code{withKey}}{If `TRUE`, add a \code{key_} column with the key values of
 each row (normally not needed since the key is either one of the other
 columns or else just the row names).}
+
+\item{\code{noKey}}{If `TRUE`, return the data without the key column (for graphing purposes.)}
 }
 \if{html}{\out{</div>}}
 }
