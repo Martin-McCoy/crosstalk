@@ -239,7 +239,8 @@ SharedData <- R6Class(
       private$.group
     },
     #' @description Returns the vector of key values. Filtering is not applied.
-    key = function() {
+    #' @param name Returns the key name if contained in \code{data}
+    key = function(name = FALSE) {
       df <- if (is.reactive(private$.data)) {
         private$.data()
       } else {
@@ -247,7 +248,7 @@ SharedData <- R6Class(
       }
 
       key <- private$.key
-      if (inherits(key, "formula"))
+      out <- if (inherits(key, "formula"))
         lazyeval::f_eval(key, df)
       else if (is.character(key))
         key
@@ -259,6 +260,10 @@ SharedData <- R6Class(
         as.character(1:nrow(df))
       else
         character()
+
+      if (name)
+        out <- names(df)[sapply(df, \(x) {identical(x, out)})]
+      return(out)
     },
     #' @description
     #' Return the data (or read and return the data if the data is a Shiny
