@@ -376,6 +376,14 @@ SharedData <- R6Class(
     clearSelection = function(ownerId = "") {
       stopIfNotShiny("SharedData$clearSelection() requires the shiny package")
       self$selection(list(), ownerId = "")
+    },
+    #' @description Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
+    #' @param name \code{chr} method name
+    #' @param method \code{any} Any R object
+    addMethod = function(name, method) {
+      rlang::env_unlock(self)
+      self[[name]] <- method
+      rlang::env_lock(self)
     }
   )
 )

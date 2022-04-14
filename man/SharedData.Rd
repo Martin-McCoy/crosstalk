@@ -24,6 +24,7 @@ ggplot2 plots).
 \item \href{#method-data}{\code{SharedData$data()}}
 \item \href{#method-selection}{\code{SharedData$selection()}}
 \item \href{#method-clearSelection}{\code{SharedData$clearSelection()}}
+\item \href{#method-addMethod}{\code{SharedData$addMethod()}}
 \item \href{#method-clone}{\code{SharedData$clone()}}
 }
 }
@@ -193,6 +194,25 @@ to the client that it should do so.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{ownerId}}{See the [SharedData$selection()] method.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-addMethod"></a>}}
+\if{latex}{\out{\hypertarget{method-addMethod}{}}}
+\subsection{Method \code{addMethod()}}{
+Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$addMethod(name, method)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{\code{chr} method name}
+
+\item{\code{method}}{\code{any} Any R object}
 }
 \if{html}{\out{</div>}}
 }
