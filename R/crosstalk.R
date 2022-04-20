@@ -221,6 +221,7 @@ SharedData <- R6Class(
           }
         })
       }
+      self
     },
     #' @description Return the data frame that was used to create this
     #' \code{SharedData} instance. If a reactive expression, evaluate the
@@ -384,6 +385,7 @@ SharedData <- R6Class(
       rlang::env_unlock(self)
       self[[name]] <- method
       rlang::env_lock(self)
+      self
     }
   )
 )
