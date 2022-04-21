@@ -383,7 +383,8 @@ SharedData <- R6Class(
     #' @param method \code{any} Any R object
     addMethod = function(name, method) {
       rlang::env_unlock(self)
-      rlang::fn_env(method) <- self$.__enclos_env__
+      if (rlang::is_function(method))
+        rlang::fn_env(method) <- self$.__enclos_env__
       self[[name]] <- method
       rlang::env_lock(self)
       self
