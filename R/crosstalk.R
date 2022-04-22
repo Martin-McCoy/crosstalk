@@ -381,15 +381,16 @@ SharedData <- R6Class(
     #' @description Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
     #' @param name \code{chr} method name
     #' @param method \code{any} Any R object
-    addMethods = function(...) {
+    addMethods = function(..., where = "self") {
       methods <- rlang::dots_list(...)
-      rlang::env_unlock(self)
+      e <- self$.__enclos_env__[[where]]
+      rlang::env_unlock(e)
       purrr::imap(methods, ~{
         if (rlang::is_function(.x) && !inherits(.x, "reactive"))
           rlang::fn_env(.x) <- self$.__enclos_env__
-        self[[.y]] <<- .x
+        e[[.y]] <<- .x
       })
-      rlang::env_lock(self)
+      rlang::env_lock(e)
       self
     }
   )
