@@ -269,6 +269,13 @@ SharedData <- R6Class(
         out <- names(df)[sapply(df, \(x) {identical(x, out)})]
       return(out)
     },
+    #' @description Updates the key
+    #' @param key Character vector or one-sided formula that indicates the name
+    #'   of the column that represents the key or ID of the data frame. These
+    #'   \emph{must} be unique, and ideally will be something intrinsic to the
+    #'   data (a proper ID) rather than a transient property like row index.
+    #'
+    #'   If \code{NULL}, then \code{row.names(data)} will be used.
     newKey = function(key) {
       private$.saveKey(key)
     },
@@ -385,8 +392,8 @@ SharedData <- R6Class(
       self$selection(list(), ownerId = "")
     },
     #' @description Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
-    #' @param name \code{chr} method name
-    #' @param method \code{any} Any R object
+    #' @param ... \code{pairlist} named methods
+    #' @param where \code{chr} Which internal object to save it to. **Default** `self`.
     addMethods = function(..., where = "self") {
       methods <- rlang::dots_list(...)
       e <- self$.__enclos_env__[[where]]

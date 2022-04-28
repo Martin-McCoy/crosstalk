@@ -21,10 +21,11 @@ ggplot2 plots).
 \item \href{#method-origData}{\code{SharedData$origData()}}
 \item \href{#method-groupName}{\code{SharedData$groupName()}}
 \item \href{#method-key}{\code{SharedData$key()}}
+\item \href{#method-newKey}{\code{SharedData$newKey()}}
 \item \href{#method-data}{\code{SharedData$data()}}
 \item \href{#method-selection}{\code{SharedData$selection()}}
 \item \href{#method-clearSelection}{\code{SharedData$clearSelection()}}
-\item \href{#method-addMethod}{\code{SharedData$addMethod()}}
+\item \href{#method-addMethods}{\code{SharedData$addMethods()}}
 \item \href{#method-clone}{\code{SharedData$clone()}}
 }
 }
@@ -103,6 +104,28 @@ Returns the vector of key values. Filtering is not applied.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Returns the key name if contained in \code{data}}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-newKey"></a>}}
+\if{latex}{\out{\hypertarget{method-newKey}{}}}
+\subsection{Method \code{newKey()}}{
+Updates the key
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$newKey(key)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{key}}{Character vector or one-sided formula that indicates the name
+  of the column that represents the key or ID of the data frame. These
+  \emph{must} be unique, and ideally will be something intrinsic to the
+  data (a proper ID) rather than a transient property like row index.
+
+  If \code{NULL}, then \code{row.names(data)} will be used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -199,20 +222,20 @@ to the client that it should do so.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addMethod"></a>}}
-\if{latex}{\out{\hypertarget{method-addMethod}{}}}
-\subsection{Method \code{addMethod()}}{
+\if{html}{\out{<a id="method-addMethods"></a>}}
+\if{latex}{\out{\hypertarget{method-addMethods}{}}}
+\subsection{Method \code{addMethods()}}{
 Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$addMethod(name, method)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$addMethods(..., where = "self")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{\code{chr} method name}
+\item{\code{...}}{\code{pairlist} named methods}
 
-\item{\code{method}}{\code{any} Any R object}
+\item{\code{where}}{\code{chr} Which internal object to save it to. **Default** `self`.}
 }
 \if{html}{\out{</div>}}
 }
