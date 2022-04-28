@@ -165,6 +165,19 @@ SharedData <- R6Class(
     .updateSelection = function(value) {
       force(value)
       `$<-`(private$.rv, "selected", value)
+    },
+    .saveKey = function(key) {
+      if (inherits(key, "formula")) {
+        private$.key <- key
+      } else if (is.character(key)) {
+        private$.key <- key
+      } else if (is.function(key)) {
+        private$.key <- key
+      } else if (is.null(key)) {
+        private$.key <- key
+      } else {
+        stop("Unknown key type")
+      }
     }
   ),
   public = list(
@@ -192,17 +205,7 @@ SharedData <- R6Class(
       private$.rv <- reactiveValues()
       private$.group <- group
 
-      if (inherits(key, "formula")) {
-        private$.key <- key
-      } else if (is.character(key)) {
-        private$.key <- key
-      } else if (is.function(key)) {
-        private$.key <- key
-      } else if (is.null(key)) {
-        private$.key <- key
-      } else {
-        stop("Unknown key type")
-      }
+      private$.saveKey(key)
 
       if (is.reactive(private$.data)) {
         shiny::observeEvent(private$.data(), {
@@ -265,6 +268,9 @@ SharedData <- R6Class(
       if (name)
         out <- names(df)[sapply(df, \(x) {identical(x, out)})]
       return(out)
+    },
+    newKey = function(key) {
+      private$.saveKey(key)
     },
     #' @description
     #' Return the data (or read and return the data if the data is a Shiny
