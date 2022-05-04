@@ -352,11 +352,15 @@ SharedData <- R6Class(
     #'   cleared when the selection changes). For example, if setting the
     #'   selection based on a [shiny::plotOutput()] brush, then
     #'   `ownerId` should be the `outputId` of that `plotOutput`.
-    selection = function(value, ownerId = "") {
+    #' @param key \code{lgl} Returns the selected keys instead of a logical vector
+    selection = function(value, ownerId = "", key = FALSE) {
       stopIfNotShiny("SharedData$selection() requires the shiny package")
 
       if (missing(value)) {
-        return(private$.rv$selected)
+        out <- private$.rv$selected
+        if (key)
+          out <- self$key()[out]
+        return(out)
       } else {
         # TODO: Should we even update the server at this time? Or do we
         # force all such events to originate in the client (much like

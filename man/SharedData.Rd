@@ -184,7 +184,7 @@ If called with one or two arguments, sets the selection based on the
 given value indirectly, by sending the value to the web browser (assumes
 an active Shiny app or Shiny R Markdown document).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$selection(value, ownerId = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$selection(value, ownerId = "", key = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -199,6 +199,8 @@ widget from clearing its visual selection box, which is normally
 cleared when the selection changes). For example, if setting the
 selection based on a [shiny::plotOutput()] brush, then
 `ownerId` should be the `outputId` of that `plotOutput`.}
+
+\item{\code{key}}{\code{lgl} Returns the selected keys instead of a logical vector}
 }
 \if{html}{\out{</div>}}
 }
