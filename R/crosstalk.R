@@ -306,27 +306,30 @@ SharedData <- R6Class(
       op <- options(shiny.suppressMissingContextError = TRUE)
       on.exit(options(op), add = TRUE)
 
-      if (withSelection) {
-        if (is.null(private$.rv$selected) || length(private$.rv$selected) == 0) {
-          df$selected_ = NA
-        } else {
-          # TODO: Warn if the length of _selected is different?
-          df$selected_ <- private$.rv$selected
+      if (!is.null(df) && nrow(df)) {
+        if (withSelection) {
+          if (is.null(private$.rv$selected) || length(private$.rv$selected) == 0) {
+            df$selected_ = NA
+          } else {
+            # TODO: Warn if the length of _selected is different?
+            df$selected_ <- private$.rv$selected
+          }
+        }
+
+        if (withKey) {
+          df$key_ <- self$key()
+        }
+
+        if (noKey)
+          df <- df[!sapply(df, \(x) {all(x %in% self$key())})]
+
+        if (withFilter) {
+          if (!is.null(private$.filterCV$get())) {
+            df <- df[self$key() %in% private$.filterCV$get(),]
+          }
         }
       }
 
-      if (withKey) {
-        df$key_ <- self$key()
-      }
-
-      if (noKey)
-        df <- df[!sapply(df, \(x) {all(x %in% self$key())})]
-
-      if (withFilter) {
-        if (!is.null(private$.filterCV$get())) {
-          df <- df[self$key() %in% private$.filterCV$get(),]
-        }
-      }
 
       df
     },
