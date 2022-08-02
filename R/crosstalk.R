@@ -265,8 +265,12 @@ SharedData <- R6Class(
       else
         character()
 
-      if (name)
-        out <- names(df)[sapply(df, \(x) {identical(x, out)})]
+      if (name) {
+        if (rlang::is_formula(key))
+          out <- rlang::expr_deparse(key[[2]])
+        else
+          out <- names(df)[sapply(df, \(x) {identical(x, .out)})]
+      }
       return(out)
     },
     #' @description Updates the key
