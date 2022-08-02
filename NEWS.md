@@ -1,3 +1,5 @@
+# crosstalk 1.2.1
+
 ## crosstalk 1.2.0.9000
 
 ### Bug fixes
