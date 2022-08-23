@@ -239,7 +239,8 @@ SharedData <- R6Class(
     },
     #' @description Does the internal data have rows?
     hasRows = function() {
-      nrow(self$origData) > 0
+      d <- self$origData()
+      !is.null(d) && nrow(d) > 0
     },
     #' @description Returns the value of \code{group} that was used to create
     #' this instance.
@@ -384,6 +385,7 @@ SharedData <- R6Class(
             private$.updateSelection(NULL)
             private$.selectionCV$sendUpdate(NULL)
           } else {
+            browser()
             key <- self$key()
             if (is.character(value)) {
               private$.updateSelection(key %in% value)
