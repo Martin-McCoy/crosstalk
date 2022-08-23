@@ -237,6 +237,10 @@ SharedData <- R6Class(
         private$.data
       }
     },
+    #' @description Does the internal data have rows?
+    hasRows = function() {
+      nrow(self$origData) > 0
+    },
     #' @description Returns the value of \code{group} that was used to create
     #' this instance.
     groupName = function() {
