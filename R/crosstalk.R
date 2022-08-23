@@ -385,7 +385,6 @@ SharedData <- R6Class(
             private$.updateSelection(NULL)
             private$.selectionCV$sendUpdate(NULL)
           } else {
-            browser()
             key <- self$key()
             if (is.character(value)) {
               private$.updateSelection(key %in% value)
