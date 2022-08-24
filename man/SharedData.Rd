@@ -21,9 +21,11 @@ ggplot2 plots).
 \item \href{#method-origData}{\code{SharedData$origData()}}
 \item \href{#method-groupName}{\code{SharedData$groupName()}}
 \item \href{#method-key}{\code{SharedData$key()}}
+\item \href{#method-newKey}{\code{SharedData$newKey()}}
 \item \href{#method-data}{\code{SharedData$data()}}
 \item \href{#method-selection}{\code{SharedData$selection()}}
 \item \href{#method-clearSelection}{\code{SharedData$clearSelection()}}
+\item \href{#method-addMethods}{\code{SharedData$addMethods()}}
 \item \href{#method-clone}{\code{SharedData$clone()}}
 }
 }
@@ -95,9 +97,38 @@ this instance.
 \subsection{Method \code{key()}}{
 Returns the vector of key values. Filtering is not applied.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$key()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$key(name = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Returns the key name if contained in \code{data}}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-newKey"></a>}}
+\if{latex}{\out{\hypertarget{method-newKey}{}}}
+\subsection{Method \code{newKey()}}{
+Updates the key
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$newKey(key)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{key}}{Character vector or one-sided formula that indicates the name
+  of the column that represents the key or ID of the data frame. These
+  \emph{must} be unique, and ideally will be something intrinsic to the
+  data (a proper ID) rather than a transient property like row index.
+
+  If \code{NULL}, then \code{row.names(data)} will be used.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-data"></a>}}
@@ -111,7 +142,12 @@ will invalidate if the selection or filter change (assuming that
 information was requested), or if the original data is a reactive
 expression that has invalidated.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$data(withSelection = FALSE, withFilter = TRUE, withKey = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$data(
+  withSelection = FALSE,
+  withFilter = TRUE,
+  withKey = FALSE,
+  noKey = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -127,6 +163,8 @@ of the current filter settings, if any.}
 \item{\code{withKey}}{If `TRUE`, add a \code{key_} column with the key values of
 each row (normally not needed since the key is either one of the other
 columns or else just the row names).}
+
+\item{\code{noKey}}{If `TRUE`, return the data without the key column (for graphing purposes.)}
 }
 \if{html}{\out{</div>}}
 }
@@ -146,7 +184,7 @@ If called with one or two arguments, sets the selection based on the
 given value indirectly, by sending the value to the web browser (assumes
 an active Shiny app or Shiny R Markdown document).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SharedData$selection(value, ownerId = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$selection(value, ownerId = "", key = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -161,6 +199,8 @@ widget from clearing its visual selection box, which is normally
 cleared when the selection changes). For example, if setting the
 selection based on a [shiny::plotOutput()] brush, then
 `ownerId` should be the `outputId` of that `plotOutput`.}
+
+\item{\code{key}}{\code{lgl} Returns the selected keys instead of a logical vector}
 }
 \if{html}{\out{</div>}}
 }
@@ -179,6 +219,25 @@ to the client that it should do so.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{ownerId}}{See the [SharedData$selection()] method.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-addMethods"></a>}}
+\if{latex}{\out{\hypertarget{method-addMethods}{}}}
+\subsection{Method \code{addMethods()}}{
+Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SharedData$addMethods(..., where = "self")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{\code{pairlist} named methods}
+
+\item{\code{where}}{\code{chr} Which internal object to save it to. **Default** `self`.}
 }
 \if{html}{\out{</div>}}
 }

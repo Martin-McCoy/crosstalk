@@ -165,6 +165,19 @@ SharedData <- R6Class(
     .updateSelection = function(value) {
       force(value)
       `$<-`(private$.rv, "selected", value)
+    },
+    .saveKey = function(key) {
+      if (inherits(key, "formula")) {
+        private$.key <- key
+      } else if (is.character(key)) {
+        private$.key <- key
+      } else if (is.function(key)) {
+        private$.key <- key
+      } else if (is.null(key)) {
+        private$.key <- key
+      } else {
+        stop("Unknown key type")
+      }
     }
   ),
   public = list(
@@ -192,17 +205,7 @@ SharedData <- R6Class(
       private$.rv <- reactiveValues()
       private$.group <- group
 
-      if (inherits(key, "formula")) {
-        private$.key <- key
-      } else if (is.character(key)) {
-        private$.key <- key
-      } else if (is.function(key)) {
-        private$.key <- key
-      } else if (is.null(key)) {
-        private$.key <- key
-      } else {
-        stop("Unknown key type")
-      }
+      private$.saveKey(key)
 
       if (is.reactive(private$.data)) {
         shiny::observeEvent(private$.data(), {
@@ -221,6 +224,7 @@ SharedData <- R6Class(
           }
         })
       }
+      self
     },
     #' @description Return the data frame that was used to create this
     #' \code{SharedData} instance. If a reactive expression, evaluate the
@@ -233,13 +237,19 @@ SharedData <- R6Class(
         private$.data
       }
     },
+    #' @description Does the internal data have rows?
+    hasRows = function() {
+      d <- self$origData()
+      !is.null(d) && nrow(d) > 0
+    },
     #' @description Returns the value of \code{group} that was used to create
     #' this instance.
     groupName = function() {
       private$.group
     },
     #' @description Returns the vector of key values. Filtering is not applied.
-    key = function() {
+    #' @param name Returns the key name if contained in \code{data}
+    key = function(name = FALSE) {
       df <- if (is.reactive(private$.data)) {
         private$.data()
       } else {
@@ -247,7 +257,7 @@ SharedData <- R6Class(
       }
 
       key <- private$.key
-      if (inherits(key, "formula"))
+      out <- if (inherits(key, "formula"))
         lazyeval::f_eval(key, df)
       else if (is.character(key))
         key
@@ -259,6 +269,24 @@ SharedData <- R6Class(
         as.character(1:nrow(df))
       else
         character()
+
+      if (name) {
+        if (rlang::is_formula(key))
+          out <- rlang::expr_deparse(key[[2]])
+        else
+          out <- names(df)[sapply(df, \(x) {identical(x, .out)})]
+      }
+      return(out)
+    },
+    #' @description Updates the key
+    #' @param key Character vector or one-sided formula that indicates the name
+    #'   of the column that represents the key or ID of the data frame. These
+    #'   \emph{must} be unique, and ideally will be something intrinsic to the
+    #'   data (a proper ID) rather than a transient property like row index.
+    #'
+    #'   If \code{NULL}, then \code{row.names(data)} will be used.
+    newKey = function(key) {
+      private$.saveKey(key)
     },
     #' @description
     #' Return the data (or read and return the data if the data is a Shiny
@@ -276,7 +304,8 @@ SharedData <- R6Class(
     #' @param withKey If `TRUE`, add a \code{key_} column with the key values of
     #'   each row (normally not needed since the key is either one of the other
     #'   columns or else just the row names).
-    data = function(withSelection = FALSE, withFilter = TRUE, withKey = FALSE) {
+    #' @param noKey If `TRUE`, return the data without the key column (for graphing purposes.)
+    data = function(withSelection = FALSE, withFilter = TRUE, withKey = FALSE, noKey = FALSE) {
       df <- if (is.reactive(private$.data)) {
         private$.data()
       } else {
@@ -286,24 +315,30 @@ SharedData <- R6Class(
       op <- options(shiny.suppressMissingContextError = TRUE)
       on.exit(options(op), add = TRUE)
 
-      if (withSelection) {
-        if (is.null(private$.rv$selected) || length(private$.rv$selected) == 0) {
-          df$selected_ = NA
-        } else {
-          # TODO: Warn if the length of _selected is different?
-          df$selected_ <- private$.rv$selected
+      if (!is.null(df) && nrow(df)) {
+        if (withSelection) {
+          if (is.null(private$.rv$selected) || length(private$.rv$selected) == 0) {
+            df$selected_ = NA
+          } else {
+            # TODO: Warn if the length of _selected is different?
+            df$selected_ <- private$.rv$selected
+          }
+        }
+
+        if (withKey) {
+          df$key_ <- self$key()
+        }
+
+        if (noKey)
+          df <- df[!sapply(df, \(x) {all(x %in% self$key())})]
+
+        if (withFilter) {
+          if (!is.null(private$.filterCV$get())) {
+            df <- df[self$key() %in% private$.filterCV$get(),]
+          }
         }
       }
 
-      if (withKey) {
-        df$key_ <- self$key()
-      }
-
-      if (withFilter) {
-        if (!is.null(private$.filterCV$get())) {
-          df <- df[self$key() %in% private$.filterCV$get(),]
-        }
-      }
 
       df
     },
@@ -329,11 +364,15 @@ SharedData <- R6Class(
     #'   cleared when the selection changes). For example, if setting the
     #'   selection based on a [shiny::plotOutput()] brush, then
     #'   `ownerId` should be the `outputId` of that `plotOutput`.
-    selection = function(value, ownerId = "") {
+    #' @param key \code{lgl} Returns the selected keys instead of a logical vector
+    selection = function(value, ownerId = "", key = FALSE) {
       stopIfNotShiny("SharedData$selection() requires the shiny package")
 
       if (missing(value)) {
-        return(private$.rv$selected)
+        out <- private$.rv$selected
+        if (key)
+          out <- self$key()[out]
+        return(out)
       } else {
         # TODO: Should we even update the server at this time? Or do we
         # force all such events to originate in the client (much like
@@ -367,6 +406,21 @@ SharedData <- R6Class(
     clearSelection = function(ownerId = "") {
       stopIfNotShiny("SharedData$clearSelection() requires the shiny package")
       self$selection(list(), ownerId = "")
+    },
+    #' @description Convenience function to add a field/method to this class. Useful for tracking data related to the `data` object
+    #' @param ... \code{pairlist} named methods
+    #' @param where \code{chr} Which internal object to save it to. **Default** `self`.
+    addMethods = function(..., where = "self") {
+      methods <- rlang::dots_list(...)
+      e <- self$.__enclos_env__[[where]]
+      rlang::env_unlock(e)
+      purrr::imap(methods, ~{
+        if (rlang::is_function(.x) && !inherits(.x, "reactive"))
+          rlang::fn_env(.x) <- self$.__enclos_env__
+        e[[.y]] <<- .x
+      })
+      rlang::env_lock(e)
+      self
     }
   )
 )
