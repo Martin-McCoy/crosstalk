@@ -365,11 +365,15 @@ SharedData <- R6Class(
     #'   selection based on a [shiny::plotOutput()] brush, then
     #'   `ownerId` should be the `outputId` of that `plotOutput`.
     #' @param key \code{lgl} Returns the selected keys instead of a logical vector
-    selection = function(value, ownerId = "", key = FALSE) {
+    selection = function(value, ownerId = "", key = FALSE, isolate = FALSE) {
       stopIfNotShiny("SharedData$selection() requires the shiny package")
 
       if (missing(value)) {
-        out <- private$.rv$selected
+        out <- if (isolate) {
+            shiny::isolate(private$.rv$selected)
+          } else {
+            private$.rv$selected
+          }
         if (key)
           out <- self$key()[out]
         return(out)
