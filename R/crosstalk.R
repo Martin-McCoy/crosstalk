@@ -238,8 +238,11 @@ SharedData <- R6Class(
       }
     },
     #' @description Does the internal data have rows?
-    hasRows = function() {
+    #' @param count_all_na_rows Include rows with all NA when considering if data is present?
+    hasRows = function(count_all_na_rows = FALSE) {
       d <- self$origData()
+      if (!count_all_na_rows)
+        d <- d[apply(d, 1, \(.x) !all(is.na(.x))),]
       !is.null(d) && nrow(d) > 0
     },
     #' @description Returns the value of \code{group} that was used to create
